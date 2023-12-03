@@ -1,0 +1,25 @@
+#!/bin/bash
+
+sudo apt-get update -y
+sudo apt-get install -y python3-pip git authbind awscli
+
+git clone https://github.com/viniciusmm7/generic-flask-rest-api
+sudo chown -R ubuntu ~/generic-flask-rest-api
+cd generic-flask-rest-api/
+
+pip install -r requirements.txt
+
+export DB_ENDPOINT=$(aws rds describe-db-instances --region us-east-1 --query 'DBInstances[1].Endpoint.Address' --output text)
+export DB_HOST=$(dig +short $DB_ENDPOINT)
+export DB_USER=${db_user}
+export DB_PASSWORD=${db_password}
+export DB_NAME=${db_name}
+export INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+
+aws logs create-log-stream --log-group-name "/flask-app-vmm/logs" --log-stream-name "$INSTANCE_ID" --region us-east-1
+
+sudo touch /etc/authbind/byport/80
+sudo chmod 500 /etc/authbind/byport/80
+sudo chown ubuntu /etc/authbind/byport/80
+
+authbind --deep ./api.py --host 0.0.0.0 --port 80
