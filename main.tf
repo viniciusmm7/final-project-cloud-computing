@@ -51,25 +51,18 @@ module "iam" {
   source = "./modules/iam"
 }
 
-module "lb" {
-  source = "./modules/lb"
-
-  vpc_id         = module.vpc.vpc_id
-  lb_sg_id       = module.sg.lb_sg_id
-  pub_subnet1_id = module.vpc.pub_subnet1_id
-  pub_subnet2_id = module.vpc.pub_subnet2_id
-}
-
 module "ec2" {
   source = "./modules/ec2"
 
-  ec2_profile_name    = module.iam.ec2_profile_name
-  ec2_sg_id           = module.sg.ec2_sg_id
-  db_host             = module.rds.db_host
-  priv_subnet1_id     = module.vpc.priv_subnet1_id
-  priv_subnet2_id     = module.vpc.priv_subnet2_id
-  lb_target_group_arn = module.lb.lb_target_group_arn
-  lb_id               = module.lb.lb_id
+  ec2_profile_name = module.iam.ec2_profile_name
+  ec2_sg_id        = module.sg.ec2_sg_id
+  db_host          = module.rds.db_host
+  priv_subnet1_id  = module.vpc.priv_subnet1_id
+  priv_subnet2_id  = module.vpc.priv_subnet2_id
+  lb_sg_id         = module.sg.lb_sg_id
+  vpc_id           = module.vpc.vpc_id
+  pub_subnet1_id   = module.vpc.pub_subnet1_id
+  pub_subnet2_id   = module.vpc.pub_subnet2_id
 }
 
 module "rds" {
@@ -81,14 +74,4 @@ module "rds" {
   rds_sg_id       = module.sg.rds_sg_id
   priv_subnet1_id = module.vpc.priv_subnet1_id
   priv_subnet2_id = module.vpc.priv_subnet2_id
-}
-
-module "locust" {
-  source = "./modules/locust"
-
-  ami            = "ami-0fc5d935ebf8bc3bc"
-  instance_type  = "t2.micro"
-  pub_subnet1_id = module.vpc.pub_subnet1_id
-  loc_sg_id      = module.sg.loc_sg_id
-  lb_endpoint    = module.lb.lb_endpoint
 }

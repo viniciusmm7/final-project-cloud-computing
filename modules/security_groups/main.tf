@@ -76,27 +76,3 @@ resource "aws_security_group" "rds_sec_group" {
     Name = "rds-sg-vmm"
   }
 }
-
-resource "aws_security_group" "loc_sec_group" {
-  name        = "loc-security-group-vmm"
-  description = "loc-sec-group-vmm"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "loc-sg-vmm"
-  }
-}

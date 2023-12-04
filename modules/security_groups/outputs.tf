@@ -12,8 +12,3 @@ output "rds_sg_id" {
   description = "rds_sg_id"
   value       = aws_security_group.rds_sec_group.id
 }
-
-output "loc_sg_id" {
-  description = "loc_sg_id"
-  value       = aws_security_group.loc_sec_group.id
-}
