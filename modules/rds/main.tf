@@ -1,28 +1,3 @@
-resource "aws_security_group" "rds_sec_group" {
-  name        = "rds-security-group-vmm"
-  description = "rds-sec-group-vmm"
-  vpc_id      = aws_vpc.vpc.id
-
-  ingress {
-    description     = "MySQL"
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_sec_group.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "rds-sg-vmm"
-  }
-}
-
 resource "aws_db_instance" "rds_vmm" {
   identifier           = "rds-instance-vmm"
   engine               = "mysql"
@@ -32,9 +7,9 @@ resource "aws_db_instance" "rds_vmm" {
   instance_class       = "db.t2.micro"
   parameter_group_name = "default.mysql8.0"
 
-  db_name  = var.DB_NAME
-  username = var.DB_USER
-  password = var.DB_PASSWORD
+  db_name  = var.db_name
+  username = var.db_username
+  password = var.db_password
 
   multi_az            = true
   publicly_accessible = false
@@ -47,7 +22,7 @@ resource "aws_db_instance" "rds_vmm" {
 
   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
 
-  vpc_security_group_ids = [aws_security_group.rds_sec_group.id]
+  vpc_security_group_ids = [var.rds_sg_id]
 
   tags = {
     Name = "rds-instance-vmm"
@@ -56,13 +31,9 @@ resource "aws_db_instance" "rds_vmm" {
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "db-subnet-group-vmm"
-  subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+  subnet_ids = [var.priv_subnet1_id, var.priv_subnet2_id]
 
   tags = {
     Name = "db-subnet-group-vmm"
   }
-}
-
-output "database_dns" {
-  value = aws_db_instance.rds_vmm.address
 }

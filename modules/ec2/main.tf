@@ -1,45 +1,12 @@
-resource "aws_security_group" "ec2_sec_group" {
-  name        = "ec2-security-group-vmm"
-  description = "ec2-sec-group-vmm"
-  vpc_id      = aws_vpc.vpc.id
-
-  ingress {
-    description     = "HTTP"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lb_sec_group.id]
-  }
-
-  ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "ec2-sg-vmm"
-  }
-}
-
 resource "aws_launch_template" "launch_template" {
   name_prefix = "launch-template-vmm"
 
   image_id               = "ami-0fc5d935ebf8bc3bc"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.ec2_sec_group.id]
+  vpc_security_group_ids = [var.ec2_sg_id]
 
-  user_data = base64encode(templatefile("user_data.tftpl", {
-    db_host     = aws_db_instance.rds_vmm.address,
+  user_data = base64encode(templatefile("${path.module}/user_data.tftpl", {
+    db_host     = var.db_host,
     db_user     = var.db_username,
     db_password = var.db_password,
     db_name     = var.db_name
@@ -48,7 +15,7 @@ resource "aws_launch_template" "launch_template" {
   key_name = "viniciusmm7"
 
   iam_instance_profile {
-    name = aws_iam_instance_profile.ec2_profile.name
+    name = var.ec2_profile_name
   }
 }
 
@@ -64,8 +31,8 @@ resource "aws_autoscaling_group" "asg_vmm" {
     version = "$Latest"
   }
 
-  vpc_zone_identifier = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
-  target_group_arns   = [aws_alb_target_group.alb_target_group.arn]
+  vpc_zone_identifier = [var.pub_subnet1_id, var.pub_subnet2_id]
+  target_group_arns   = [var.alb_target_group_arn]
 
   tag {
     key                 = "Name"
@@ -99,7 +66,17 @@ resource "aws_autoscaling_policy" "tracking" {
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label         = "${split("/", aws_alb.load_balancer.id)[1]}/${split("/", aws_alb.load_balancer.id)[2]}/${split("/", aws_alb.load_balancer.id)[3]}/targetgroup/${split("/", aws_alb_target_group.alb_target_group.arn)[1]}/${split("/", aws_alb_target_group.alb_target_group.arn)[2]}"
+      resource_label = "${
+        split("/", var.alb_id)[1]
+        }/${
+        split("/", var.alb_id)[2]
+        }/${
+        split("/", var.alb_id)[3]
+        }/targetgroup/${
+        split("/", var.alb_target_group_arn)[1]
+        }/${
+        split("/", var.alb_target_group_arn)[2]
+      }"
     }
     target_value = 200
   }
@@ -145,7 +122,7 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu_alarm" {
 
 resource "aws_autoscaling_attachment" "as_attachment" {
   autoscaling_group_name = aws_autoscaling_group.asg_vmm.name
-  lb_target_group_arn    = aws_alb_target_group.alb_target_group.arn
+  lb_target_group_arn    = var.alb_target_group_arn
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {

@@ -1,42 +1,9 @@
-resource "aws_security_group" "lb_sec_group" {
-  name        = "alb-security-group-vmm"
-  description = "app-lb-sec-group-vmm"
-  vpc_id      = aws_vpc.vpc.id
-
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "alb-sec-group-vmm"
-  }
-}
-
 resource "aws_alb" "load_balancer" {
   name               = "server-alb-vmm"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.lb_sec_group.id]
-  subnets            = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
+  security_groups    = [var.alb_sg_id]
+  subnets            = [var.pub_subnet1_id, var.pub_subnet2_id]
 
   enable_cross_zone_load_balancing = true
 
@@ -49,7 +16,7 @@ resource "aws_alb_target_group" "alb_target_group" {
   name     = "alb-target-group-vmm"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc.id
+  vpc_id   = var.vpc_id
 
   health_check {
     enabled             = true
@@ -76,8 +43,4 @@ resource "aws_alb_listener" "lb_listener" {
     type             = "forward"
     target_group_arn = aws_alb_target_group.alb_target_group.arn
   }
-}
-
-output "load_balancer_dns" {
-  value = aws_alb.load_balancer.dns_name
 }
