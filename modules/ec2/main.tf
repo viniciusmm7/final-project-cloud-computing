@@ -57,8 +57,6 @@ resource "aws_launch_template" "lt" {
     db_host = var.db_host
   }))
 
-  key_name = "viniciusmm7"
-
   iam_instance_profile {
     name = var.ec2_profile_name
   }
