@@ -1,7 +1,16 @@
+resource "aws_db_subnet_group" "db_subnet_group" {
+  name       = "db-subnet-group-vmm"
+  subnet_ids = [var.priv_subnet1_id, var.priv_subnet2_id]
+
+  tags = {
+    Name = "db-subnet-group-vmm"
+  }
+}
+
 resource "aws_db_instance" "rds_vmm" {
   identifier_prefix    = "rds-instance-vmm-"
   engine               = "mysql"
-  engine_version       = "8.0"
+  engine_version       = "8.0.33"
   allocated_storage    = 20
   storage_type         = "gp2"
   instance_class       = "db.t2.micro"
@@ -26,14 +35,5 @@ resource "aws_db_instance" "rds_vmm" {
 
   tags = {
     Name = "rds-instance-vmm"
-  }
-}
-
-resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "db-subnet-group-vmm"
-  subnet_ids = [var.priv_subnet1_id, var.priv_subnet2_id]
-
-  tags = {
-    Name = "db-subnet-group-vmm"
   }
 }

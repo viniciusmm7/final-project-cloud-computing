@@ -9,8 +9,6 @@ resource "aws_instance" "ec2_locust" {
     lb_endpoint = var.lb_endpoint
   }))
 
-  key_name = "viniciusmm7"
-
   tags = {
     Name = "ec2-locust-vmm"
   }

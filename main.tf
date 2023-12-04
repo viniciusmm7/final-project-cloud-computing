@@ -47,6 +47,31 @@ module "sg" {
   vpc_id = module.vpc.vpc_id
 }
 
+module "iam" {
+  source = "./modules/iam"
+}
+
+module "lb" {
+  source = "./modules/lb"
+
+  vpc_id         = module.vpc.vpc_id
+  lb_sg_id       = module.sg.lb_sg_id
+  pub_subnet1_id = module.vpc.pub_subnet1_id
+  pub_subnet2_id = module.vpc.pub_subnet2_id
+}
+
+module "ec2" {
+  source = "./modules/ec2"
+
+  ec2_profile_name    = module.iam.ec2_profile_name
+  ec2_sg_id           = module.sg.ec2_sg_id
+  db_host             = module.rds.db_host
+  priv_subnet1_id     = module.vpc.priv_subnet1_id
+  priv_subnet2_id     = module.vpc.priv_subnet2_id
+  lb_target_group_arn = module.lb.lb_target_group_arn
+  lb_id               = module.lb.lb_id
+}
+
 module "rds" {
   source = "./modules/rds"
 
@@ -56,34 +81,6 @@ module "rds" {
   rds_sg_id       = module.sg.rds_sg_id
   priv_subnet1_id = module.vpc.priv_subnet1_id
   priv_subnet2_id = module.vpc.priv_subnet2_id
-}
-
-module "ec2" {
-  source = "./modules/ec2"
-
-  ec2_profile_name     = module.iam.ec2_profile_name
-  ec2_sg_id            = module.sg.ec2_sg_id
-  db_host              = module.rds.db_host
-  db_username          = local.db_credentials.username
-  db_password          = local.db_credentials.password
-  db_name              = local.db_credentials.name
-  priv_subnet1_id      = module.vpc.priv_subnet1_id
-  priv_subnet2_id      = module.vpc.priv_subnet2_id
-  alb_target_group_arn = module.lb.alb_target_group_arn
-  alb_id               = module.lb.alb_id
-}
-
-module "lb" {
-  source = "./modules/lb"
-
-  vpc_id         = module.vpc.vpc_id
-  alb_sg_id      = module.sg.alb_sg_id
-  pub_subnet1_id = module.vpc.pub_subnet1_id
-  pub_subnet2_id = module.vpc.pub_subnet2_id
-}
-
-module "iam" {
-  source = "./modules/iam"
 }
 
 module "locust" {

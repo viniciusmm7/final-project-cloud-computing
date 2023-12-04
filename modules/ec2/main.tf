@@ -1,15 +1,12 @@
-resource "aws_launch_template" "launch_template" {
-  name_prefix = "launch-template-vmm-"
+resource "aws_launch_template" "lt" {
+  name_prefix = "lt-vmm-"
 
   image_id               = "ami-0fc5d935ebf8bc3bc"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [var.ec2_sg_id]
 
   user_data = base64encode(templatefile("${path.module}/user_data.tftpl", {
-    db_host     = var.db_host,
-    db_user     = var.db_username,
-    db_password = var.db_password,
-    db_name     = var.db_name
+    db_host     = var.db_host
   }))
 
   iam_instance_profile {
@@ -25,12 +22,12 @@ resource "aws_autoscaling_group" "asg_vmm" {
   health_check_type = "EC2"
 
   launch_template {
-    id      = aws_launch_template.launch_template.id
+    id      = aws_launch_template.lt.id
     version = "$Latest"
   }
 
   vpc_zone_identifier = [var.priv_subnet1_id, var.priv_subnet2_id]
-  target_group_arns   = [var.alb_target_group_arn]
+  target_group_arns   = [var.lb_target_group_arn]
 
   tag {
     key                 = "Name"
@@ -65,15 +62,15 @@ resource "aws_autoscaling_policy" "tracking" {
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
       resource_label = "${
-        split("/", var.alb_id)[1]
+        split("/", var.lb_id)[1]
         }/${
-        split("/", var.alb_id)[2]
+        split("/", var.lb_id)[2]
         }/${
-        split("/", var.alb_id)[3]
+        split("/", var.lb_id)[3]
         }/targetgroup/${
-        split("/", var.alb_target_group_arn)[1]
+        split("/", var.lb_target_group_arn)[1]
         }/${
-        split("/", var.alb_target_group_arn)[2]
+        split("/", var.lb_target_group_arn)[2]
       }"
     }
     target_value = 200
@@ -116,11 +113,6 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu_alarm" {
   }
 
   alarm_actions = [aws_autoscaling_policy.scale_down.arn]
-}
-
-resource "aws_autoscaling_attachment" "as_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.asg_vmm.name
-  lb_target_group_arn    = var.alb_target_group_arn
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {

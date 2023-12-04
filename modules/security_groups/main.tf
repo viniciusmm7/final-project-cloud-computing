@@ -1,14 +1,7 @@
 resource "aws_security_group" "lb_sec_group" {
-  name        = "alb-security-group-vmm"
+  name        = "lb-security-group-vmm"
   description = "app-lb-sec-group-vmm"
   vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   ingress {
     from_port   = 80
@@ -25,7 +18,7 @@ resource "aws_security_group" "lb_sec_group" {
   }
 
   tags = {
-    Name = "alb-sec-group-vmm"
+    Name = "lb-sec-group-vmm"
   }
 }
 
@@ -35,10 +28,10 @@ resource "aws_security_group" "ec2_sec_group" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lb_sec_group.id]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {

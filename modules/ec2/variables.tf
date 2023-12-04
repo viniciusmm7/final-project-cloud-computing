@@ -8,21 +8,6 @@ variable "ec2_profile_name" {
   type        = string
 }
 
-variable "db_name" {
-  description = "db_name"
-  type        = string
-}
-
-variable "db_username" {
-  description = "db_username"
-  type        = string
-}
-
-variable "db_password" {
-  description = "db_password"
-  type        = string
-}
-
 variable "db_host" {
   description = "db_host"
   type        = string
@@ -38,12 +23,12 @@ variable "priv_subnet2_id" {
   type        = string
 }
 
-variable "alb_target_group_arn" {
-  description = "alb_target_group_arn"
+variable "lb_target_group_arn" {
+  description = "lb_target_group_arn"
   type        = string
 }
 
-variable "alb_id" {
-  description = "alb_id"
+variable "lb_id" {
+  description = "lb_id"
   type        = string
 }

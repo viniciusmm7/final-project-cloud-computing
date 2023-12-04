@@ -3,8 +3,8 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "alb_sg_id" {
-  description = "alb_sg_id"
+variable "lb_sg_id" {
+  description = "lb_sg_id"
   type        = string
 }
 
