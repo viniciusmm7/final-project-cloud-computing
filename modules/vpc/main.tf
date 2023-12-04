@@ -81,12 +81,16 @@ resource "aws_route_table_association" "subnet2_route_table" {
 }
 
 resource "aws_eip" "eip1" {
+  vpc = true
+
   tags = {
     Name = "eip1-vmm"
   }
 }
 
 resource "aws_eip" "eip2" {
+  vpc = true
+
   tags = {
     Name = "eip2-vmm"
   }

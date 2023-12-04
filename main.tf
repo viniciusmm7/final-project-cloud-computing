@@ -23,7 +23,7 @@ data "aws_availability_zones" "available" {
 }
 
 data "aws_secretsmanager_secret" "db_credentials" {
-  name = "api/mysql/credentials"
+  name = "prod/beta/mysql/vmm_credentials"
 }
 
 data "aws_secretsmanager_secret_version" "current" {
@@ -67,8 +67,8 @@ module "ec2" {
   db_username          = local.db_credentials.username
   db_password          = local.db_credentials.password
   db_name              = local.db_credentials.name
-  pub_subnet1_id       = module.vpc.pub_subnet1_id
-  pub_subnet2_id       = module.vpc.pub_subnet2_id
+  priv_subnet1_id      = module.vpc.priv_subnet1_id
+  priv_subnet2_id      = module.vpc.priv_subnet2_id
   alb_target_group_arn = module.lb.alb_target_group_arn
   alb_id               = module.lb.alb_id
 }
@@ -84,4 +84,14 @@ module "lb" {
 
 module "iam" {
   source = "./modules/iam"
+}
+
+module "locust" {
+  source = "./modules/locust"
+
+  ami            = "ami-0fc5d935ebf8bc3bc"
+  instance_type  = "t2.micro"
+  pub_subnet1_id = module.vpc.pub_subnet1_id
+  loc_sg_id      = module.sg.loc_sg_id
+  lb_endpoint    = module.lb.lb_endpoint
 }

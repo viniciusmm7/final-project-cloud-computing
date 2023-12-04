@@ -5,7 +5,8 @@ resource "aws_alb" "load_balancer" {
   security_groups    = [var.alb_sg_id]
   subnets            = [var.pub_subnet1_id, var.pub_subnet2_id]
 
-  enable_cross_zone_load_balancing = true
+  # enable_cross_zone_load_balancing = true
+  enable_deletion_protection = false
 
   tags = {
     Name = "server-alb-vmm"
@@ -26,7 +27,7 @@ resource "aws_alb_target_group" "alb_target_group" {
     interval            = 30
     path                = "/"
     protocol            = "HTTP"
-    port                = 80
+    port                = "80"
   }
 
   tags = {
@@ -34,7 +35,7 @@ resource "aws_alb_target_group" "alb_target_group" {
   }
 }
 
-resource "aws_alb_listener" "lb_listener" {
+resource "aws_alb_listener" "server_listener" {
   load_balancer_arn = aws_alb.load_balancer.arn
   port              = 80
   protocol          = "HTTP"

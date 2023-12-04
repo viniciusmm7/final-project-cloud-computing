@@ -1,5 +1,5 @@
 resource "aws_db_instance" "rds_vmm" {
-  identifier           = "rds-instance-vmm"
+  identifier_prefix    = "rds-instance-vmm-"
   engine               = "mysql"
   engine_version       = "8.0"
   allocated_storage    = 20
@@ -15,8 +15,8 @@ resource "aws_db_instance" "rds_vmm" {
   publicly_accessible = false
 
   backup_retention_period = 7
-  backup_window           = "03:00-03:59"
-  maintenance_window      = "Sun:04:00-Sun:04:59"
+  backup_window           = "03:00-04:00"
+  maintenance_window      = "Sun:04:00-Sun:05:00"
 
   final_snapshot_identifier = "final-rds-snapshot-vmm-${formatdate("YYYYMMDDHHmmss", timestamp())}"
 

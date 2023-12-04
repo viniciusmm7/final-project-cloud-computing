@@ -1,5 +1,5 @@
 resource "aws_launch_template" "launch_template" {
-  name_prefix = "launch-template-vmm"
+  name_prefix = "launch-template-vmm-"
 
   image_id               = "ami-0fc5d935ebf8bc3bc"
   instance_type          = "t2.micro"
@@ -11,8 +11,6 @@ resource "aws_launch_template" "launch_template" {
     db_password = var.db_password,
     db_name     = var.db_name
   }))
-
-  key_name = "viniciusmm7"
 
   iam_instance_profile {
     name = var.ec2_profile_name
@@ -31,7 +29,7 @@ resource "aws_autoscaling_group" "asg_vmm" {
     version = "$Latest"
   }
 
-  vpc_zone_identifier = [var.pub_subnet1_id, var.pub_subnet2_id]
+  vpc_zone_identifier = [var.priv_subnet1_id, var.priv_subnet2_id]
   target_group_arns   = [var.alb_target_group_arn]
 
   tag {
@@ -92,7 +90,7 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu_alarm" {
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 10
+  period              = 300
   statistic           = "Average"
   threshold           = 70
 
@@ -109,7 +107,7 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu_alarm" {
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 10
+  period              = 300
   statistic           = "Average"
   threshold           = 10
 

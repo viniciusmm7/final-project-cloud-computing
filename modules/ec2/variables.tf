@@ -28,12 +28,12 @@ variable "db_host" {
   type        = string
 }
 
-variable "pub_subnet1_id" {
+variable "priv_subnet1_id" {
   description = "pub_subnet1_id"
   type        = string
 }
 
-variable "pub_subnet2_id" {
+variable "priv_subnet2_id" {
   description = "pub_subnet2_id"
   type        = string
 }
