@@ -72,4 +72,4 @@ Three security groups are defined, one for the **Load Balancer**, one for EC2 in
 The estimated cost using the official AWS calculator was: $134.83/month. More details [here](My%20Estimate%20-%20AWS%20Pricing%20Calculator.pdf).
 
 ## Infrastructure Diagram
-![Infrastructure Diagram](diagram.png)
+![Infrastructure Diagram](diagrama.png)
