@@ -5,7 +5,7 @@
 Este projeto automatiza o provisionamento de infraestrutura de nuvem pública escalável e resiliente na AWS usando o Terraform. Ele foi projetado para implantar uma API RESTful simples baseada em Python, suportada por uma infraestrutura de backend robusta que inclui um Application Load Balancer (ALB), instâncias EC2 com escalonamento automático e um banco de dados RDS MySQL.
 
 ## Repositório Auxiliares
-O código da API RESTful feita em Python utilizando Flask está disponível aqui: [Código da API RESTful feita em Python utilizando Flask](https://github.com/viniciusmm7/generic-flask-rest-api)
+O código da API RESTful feita em Python utilizando Flask está disponível [aqui](https://github.com/viniciusmm7/generic-flask-rest-api)
 
 ## Manual de uso
 
