@@ -1,4 +1,5 @@
 # Projeto Final de Computação em Nuvem
+[ENGLISH VERSION](README_EN.md)
 
 ## Visão Geral do Projeto
 Este projeto automatiza o provisionamento de infraestrutura de nuvem pública escalável e resiliente na AWS usando o Terraform. Ele foi projetado para implantar uma API RESTful simples baseada em Python, suportada por uma infraestrutura de backend robusta que inclui um Application Load Balancer (ALB), instâncias EC2 com escalonamento automático e um banco de dados RDS MySQL.
